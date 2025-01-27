@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <string>
 #include "Tools.h"
-
 /*
  * Hints/Notes:
  * 1) Pay attention to what the comments say. 
@@ -43,7 +42,11 @@
 */
 uint64_t Tools::buildLong(uint8_t bytes[LONGSIZE])
 {
-  return 0;
+  uint64_t newLong = 0;
+  for (int i = LONGSIZE - 1; i >= 0; i--) {
+    newLong = (newLong << 8) | bytes[i];
+  }
+  return newLong;
 }
 
 /** 
@@ -67,7 +70,10 @@ uint64_t Tools::buildLong(uint8_t bytes[LONGSIZE])
 */
 uint64_t Tools::getByte(uint64_t source, int32_t byteNum)
 {
-  return 0;
+  if (byteNum > 7 || byteNum < 0) {
+    return 0;
+  }
+  return ((source >> byteNum * LONGSIZE) & 0x00000000000000ff);
 }
 
 /**
@@ -97,7 +103,15 @@ uint64_t Tools::getByte(uint64_t source, int32_t byteNum)
  */
 uint64_t Tools::getBits(uint64_t source, int32_t low, int32_t high)
 {
-  return 0;
+  if (low  > 63 || low  < 0 ||
+      high > 63 || high < 0 ||
+      low > high
+  ) {
+    return 0;
+  }
+  uint8_t upperBoundOffset = (63 - high); 
+  source = source << upperBoundOffset;
+  return(source >> upperBoundOffset + low);
 }
 
 
@@ -125,7 +139,23 @@ uint64_t Tools::getBits(uint64_t source, int32_t low, int32_t high)
  */
 uint64_t Tools::setBits(uint64_t source, int32_t low, int32_t high)
 {
-  return 0;
+
+  if (low  > 63 // || low  < 0 ||
+      // high > 63 || high < 0 ||
+      // low >= high
+  ) {
+    return source;
+  }
+  uint64_t bitsToSet = 0xffffffffffffffff;
+  uint32_t upperBoundOffset = (63 - high); 
+  bitsToSet = bitsToSet << upperBoundOffset;
+  bitsToSet = bitsToSet >> upperBoundOffset + low;
+  bitsToSet = bitsToSet << low;
+
+  // printf("Source\t\t\tLow\tHigh\tResult\n");
+  // printf("%016lx\t%d\t%d\t%016lx\n", source, low, high, (source | bitsToSet));
+
+  return (source | bitsToSet);
 }
 
 /**
@@ -150,7 +180,24 @@ uint64_t Tools::setBits(uint64_t source, int32_t low, int32_t high)
  */
 uint64_t Tools::clearBits(uint64_t source, int32_t low, int32_t high)
 {
-  return 0;
+  if (low  > 63 // || low  < 0 ||
+    // high > 63 || high < 0 ||
+    // low >= high
+  ) {
+    return source;
+  }
+
+  uint64_t bitsToSet = 0xffffffffffffffff;
+  
+  uint8_t upperBoundOffset = (63 - high); 
+  bitsToSet = bitsToSet << upperBoundOffset;
+  bitsToSet = bitsToSet >> upperBoundOffset + low;
+  bitsToSet = bitsToSet << low;
+
+  // printf("Source\t\t\tLow\tHigh\tResult\n");
+  // printf("%016x\t%d\t%d\t%016x\n", source, low, high, (source | bitsToSet));
+
+  return (source & ~bitsToSet);
 }
 
 
@@ -206,7 +253,7 @@ uint64_t Tools::copyBits(uint64_t source, uint64_t dest,
  */
 uint64_t Tools::setByte(uint64_t source, int32_t byteNum)
 {
-  return 0;
+
 }
 
 
@@ -228,7 +275,7 @@ uint64_t Tools::setByte(uint64_t source, int32_t byteNum)
  */
 uint64_t Tools::sign(uint64_t source)
 {
-  return 0;
+  return getBits(source, 63, 63);
 }
 
 /**
