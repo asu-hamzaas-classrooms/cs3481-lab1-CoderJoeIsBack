@@ -299,14 +299,19 @@ uint64_t Tools::sign(uint64_t source)
  */
 bool Tools::addOverflow(uint64_t op1, uint64_t op2)
 {
-  //Hint: If an overflow occurs then it overflows by just one bit.
-  //      In other words, 65 bits would be needed to store the arithmetic 
-  //      result instead of 64 and the sign bit in the stored result (bit 63) is incorrect. 
-  //      Thus, the way to check for an overflow is to compare the signs of the
-  //      operand and the result.  For example, if you add two positive numbers, 
-  //      the result should be positive, otherwise an overflow occurred.
-  return false;
+    // Hint: If an overflow occurs then it overflows by just one bit.
+    //       In other words, 65 bits would be needed to store the arithmetic 
+    //       result instead of 64 and the sign bit in the stored result (bit 63) is incorrect. 
+    //       Thus, the way to check for an overflow is to compare the signs of the
+    //       operand and the result.  For example, if you add two positive numbers, 
+    //       the result should be positive, otherwise an overflow occurred.
+    uint64_t result = op1 + op2;
+    return (sign(op1) == sign(op2)) && (sign(op1) != sign(result));
 }
+
+// if (!sign(op1 + op2) && !sign(op1) && !sign(op1)) {
+//         return false;
+//     }
 
 /**
  * assumes that op1 and op2 contain 64 bit two's complement values
@@ -330,9 +335,11 @@ bool Tools::addOverflow(uint64_t op1, uint64_t op2)
  */
 bool Tools::subOverflow(uint64_t op1, uint64_t op2)
 {
-  //See hint for addOverflow
-  //Note: you can not simply use addOverflow in this function.  If you negate
-  //op1 in order to an add, you may get an overflow. 
-  //NOTE: the subtraction is op2 - op1 (not op1 - op2).
-  return false;
+    //See hint for addOverflow
+    //Note: you can not simply use addOverflow in this function.  If you negate
+    //op1 in order to an add, you may get an overflow. 
+    //NOTE: the subtraction is op2 - op1 (not op1 - op2).
+    uint64_t result = op2 - op1;
+    return (sign(op1) != sign(op2)) && (sign(result) != sign(op2));
+
 }
